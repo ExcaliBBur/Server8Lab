@@ -1,7 +1,7 @@
-package Data;
+package Models;
 
 import java.time.LocalDateTime;
-import java.util.SortedSet;
+import java.util.Set;
 
 /**
  * Responsible for working with collection.
@@ -11,33 +11,32 @@ import java.util.SortedSet;
 public abstract class CollectionBase<T> {
     private final Class<T> collectionType;
     private final java.time.LocalDateTime initializationDate;
-    private SortedSet<T> sortedSet;
+    private Set<T> set;
 
     /**
      * Constructor, gets all the necessary things.
      *
      * @param collectionType type of collection content
-     * @param sortedSet      collection base itself
      */
-    public CollectionBase(Class<T> collectionType, SortedSet<T> sortedSet) {
+    public CollectionBase(Class<T> collectionType, Set<T> set) {
         this.collectionType = collectionType;
-        this.sortedSet = sortedSet;
+        this.set = set;
         this.initializationDate = LocalDateTime.now();
     }
 
-    public abstract void uploadContent(SortedSet<T> sortedSet);
+    public abstract void uploadContent(Set<T> Set);
 
     /**
      * Getter of sortedSet.
      *
      * @return SortedSet of objects
      */
-    public SortedSet<T> getSortedSet() {
-        return sortedSet;
+    public Set<T> getSet() {
+        return set;
     }
 
-    public void setSortedSet(SortedSet<T> sortedSet) {
-        this.sortedSet = sortedSet;
+    public void setSet(Set<T> set) {
+        this.set = set;
     }
 
     /**

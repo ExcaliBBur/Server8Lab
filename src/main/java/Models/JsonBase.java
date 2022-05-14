@@ -1,4 +1,4 @@
-package Data;
+package Models;
 
 import Exceptions.DeserializationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -16,10 +16,9 @@ public abstract class JsonBase<T extends Collectables> extends FormatBase<T> {
      * Constructor, gets all the necessary things.
      *
      * @param collectionType type of collection content
-     * @param sortedSet      the collection base itself
      */
-    public JsonBase(Class<T> collectionType, SortedSet<T> sortedSet) {
-        super(collectionType, sortedSet);
+    public JsonBase(Class<T> collectionType, Set<T> set) {
+        super(collectionType, set);
     }
 
     @Override

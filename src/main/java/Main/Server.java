@@ -1,9 +1,9 @@
 package Main;
 
-import Data.*;
+import Models.*;
 import Interaction.Parser;
 import Interaction.Receiver;
-import Processing.*;
+import Realisation.*;
 
 import java.io.*;
 import java.net.*;
@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 
 public class Server {
     public static Logger logger;
+    public static Set<SocketAddress> connectedUsers = new HashSet<>();
 
     static {
         try {
@@ -33,8 +34,8 @@ public class Server {
 
     public static void main(String[] args) {
         try (DatagramChannel datagramChannel = DatagramChannel.open(); Selector selector = Selector.open();
-             Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/",
-                     "", "")) {
+             Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/Cities",
+                     "postgres", "1978ilya2003")) {
 
             CityBase cityBase = new CityBase(City.class, Collections.synchronizedSortedSet(new TreeSet<>()));
             CityController cityController = new CityController(connection, cityBase);
@@ -53,7 +54,7 @@ public class Server {
                     userController);
             cityWorker.getController().moveContent();
 
-            Executioner executioner = new Executioner(datagramChannel, serverWorker, cityWorker);
+            Executioner executioner = new Executioner(datagramChannel, cityController, serverWorker, cityWorker);
 
             Thread thread = new Thread(() -> {
                 try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in))) {

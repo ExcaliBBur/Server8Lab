@@ -1,4 +1,4 @@
-package Data;
+package Models;
 
 /**
  * Represents all specified classes for storage in the collection.

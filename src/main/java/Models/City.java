@@ -1,13 +1,15 @@
-package Data;
+package Models;
 
 import Exceptions.DeserializationException;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
+import java.io.Serializable;
+
 /**
  * Class whose objects are contained in the collection.
  */
-public class City extends Collectables implements Comparable<City> {
+public class City extends Collectables implements Comparable<City>, Serializable {
     private Coordinates coordinates;
     private java.time.LocalDateTime creationDate;
     private Integer area;
@@ -17,6 +19,8 @@ public class City extends Collectables implements Comparable<City> {
     private Government government;
     private StandardOfLiving standardOfLiving;
     private Human governor;
+
+    public static final long serialVersionUID = 42L;
 
     public City() {
 
@@ -555,7 +559,9 @@ public class City extends Collectables implements Comparable<City> {
     /**
      * Represents combination of Data.City coordinates.
      */
-    public static class Coordinates {
+    public static class Coordinates implements Serializable {
+        static final long serialVersionUID = 42L;
+
         private Double firstCoordinates;
         private Float secondCoordinates;
 
@@ -656,7 +662,9 @@ public class City extends Collectables implements Comparable<City> {
     /**
      * Description of the governor.
      */
-    public static class Human {
+    public static class Human implements Serializable {
+        static final long serialVersionUID = 42L;
+
         private String humanName = null;
 
         public Human() {

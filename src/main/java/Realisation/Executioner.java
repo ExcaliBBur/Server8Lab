@@ -1,17 +1,13 @@
-package Processing;
+package Realisation;
 
-import Data.*;
-import Interaction.Parser;
+import Models.*;
 import Interaction.Sender;
 import Main.Server;
 
 import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Class for command execution.
@@ -21,6 +17,7 @@ public class Executioner implements Runnable {
     private ClientDTO clientDTO;
     private DatagramChannel datagramChannel;
     private SocketAddress socketAddress;
+    private CityController cityController;
 
     /**
      * Constructor, gets all necessary things.
@@ -31,10 +28,11 @@ public class Executioner implements Runnable {
      * @param workers         command realizations
      */
     public Executioner(ClientDTO clientDTO, DatagramChannel datagramChannel, SocketAddress socketAddress,
-                       Worker... workers) {
+                       CityController cityController, Worker... workers) {
         this.clientDTO = clientDTO;
         this.datagramChannel = datagramChannel;
         this.socketAddress = socketAddress;
+        this.cityController = cityController;
 
         for (Worker worker : workers) {
             this.getUnitedCommandArray().addAll(worker.getCommands());
@@ -47,25 +45,27 @@ public class Executioner implements Runnable {
      * @param datagramChannel datagram channel
      * @param workers         command realizations
      */
-    public Executioner(DatagramChannel datagramChannel, Worker... workers) {
+    public Executioner(DatagramChannel datagramChannel, CityController cityController, Worker... workers) {
         this.datagramChannel = datagramChannel;
+        this.cityController = cityController;
+
         for (Worker worker : workers) {
             this.getUnitedCommandArray().addAll(worker.getCommands());
         }
     }
 
     public void run() {
-        Sender sender = new Sender(this.getDatagramChannel(), null);
+        Sender<City> sender = new Sender<>(this.getDatagramChannel(), null, null);
+        ServerDTO<City> serverCityDTO = null;
         if (this.getClientDTO().isRequest()) {
             Server.logger.log(Level.INFO, "New connection has been registered.");
             ArrayList<Command.CommandData> commandData = new ArrayList<>();
             this.getUnitedCommandArray().forEach(x -> commandData.add(new Command
                     .CommandData(x.getName(), x.getArguments(), x.getDescription(), null)));
 
-            sender.setTransferData(new TransferData(Parser.parseTo(
-                    new ServerDTO(("Ready to execute, type help to see all available commands.").getBytes(),
-                            commandData, true, true)), this.getSocketAddress()));
-            new Thread(sender).start();
+            serverCityDTO = new ServerDTO<>("Ready to execute, type help to see all available commands.".getBytes(),
+                    commandData, this.getCityController().getCollectionBase().getSet(), true,
+                    ServerDTO.DTOType.RESPONSE);
         } else {
             String keyWord = this.getClientDTO().getCommandData().getName();
             Server.logger.log(Level.INFO, "Execute the command " + keyWord + ".");
@@ -73,35 +73,17 @@ public class Executioner implements Runnable {
                 if (commands.getName().equals(keyWord)) {
                     CustomPair<String, Boolean> result = commands.doOption(this.getClientDTO().getCommandData()
                             .getUserArgs(), this.getClientDTO().getUser());
-
-                    byte[] data = result.getKey().getBytes();
-                    final int INCREMENT = 1024;
-                    ServerDTO serverDTO;
-
-                    for (int position = 0, limit = INCREMENT, capacity = 0; data.length > capacity; position = limit,
-                            limit += INCREMENT) {
-                        byte[] window = Arrays.copyOfRange(data, position, limit);
-                        capacity += limit - position;
-
-                        if (capacity >= data.length) {
-                            serverDTO = new ServerDTO(window, result.getValue(), true);
-                            Server.logger.log(Level.INFO, "The response has been sent to the client.");
-                        } else {
-                            serverDTO = new ServerDTO(window, result.getValue(), false);
-                        }
-                        sender.setTransferData(new TransferData(Parser.parseTo(serverDTO),
-                                this.getSocketAddress()));
-                        new Thread(sender).start();
-
-                        try {
-                            Thread.sleep(10);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    serverCityDTO = new ServerDTO<>(result.getKey().getBytes(), result.getValue(),
+                            ServerDTO.DTOType.RESPONSE);
+                    System.out.println();
                 }
             }
         }
+
+        sender.setServerDTO(serverCityDTO);
+        sender.setSocketAddress(this.getSocketAddress());
+        Server.connectedUsers.add(this.getSocketAddress());
+        new Thread(sender).start();
     }
 
     public List<Command> getUnitedCommandArray() {
@@ -126,5 +108,9 @@ public class Executioner implements Runnable {
 
     public void setSocketAddress(SocketAddress socketAddress) {
         this.socketAddress = socketAddress;
+    }
+
+    public CityController getCityController() {
+        return cityController;
     }
 }

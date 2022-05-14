@@ -1,7 +1,7 @@
-package Processing;
+package Realisation;
 
-import Data.City;
-import Interfaces.IFormer;
+import Models.City;
+import Interfaces.Formable;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 /**
  * Class for forming City object.
  */
-public class CityFormer implements IFormer<City> {
+public class CityFormer implements Formable<City> {
 
     @Override
     public City formObj(String object) {

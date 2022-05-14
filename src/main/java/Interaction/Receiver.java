@@ -1,6 +1,6 @@
 package Interaction;
 
-import Data.CustomPair;
+import Models.CustomPair;
 
 import java.io.IOException;
 import java.net.SocketAddress;

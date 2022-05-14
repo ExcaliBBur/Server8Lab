@@ -1,4 +1,4 @@
-package Data;
+package Models;
 
 /**
  * Custom Pair class to contain various data.

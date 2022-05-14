@@ -1,7 +1,7 @@
-package Processing;
+package Realisation;
 
-import Data.*;
-import Interfaces.IFormer;
+import Models.*;
+import Interfaces.Formable;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -17,9 +17,9 @@ import java.util.*;
 public class CityWorker<T extends City> extends CollectionWorker<T> {
     private final UserController userController;
 
-    public CityWorker(CollectionController<T> collectionController, List<Command> commands, IFormer<T> iFormer,
+    public CityWorker(CollectionController<T> collectionController, List<Command> commands, Formable<T> formable,
                       UserController userController) {
-        super(collectionController, commands, iFormer);
+        super(collectionController, commands, formable);
         this.initCommands();
         this.userController = userController;
     }
@@ -63,7 +63,7 @@ public class CityWorker<T extends City> extends CollectionWorker<T> {
     public void initCommands() {
         ArrayList<Command> arrayList = new ArrayList<>();
 
-        new Reflections("Processing.CityWorker").getSubTypesOf(Command.class).forEach(x -> {
+        new Reflections("Realisation.CityWorker").getSubTypesOf(Command.class).forEach(x -> {
             try {
                 arrayList.add(x.getConstructor(CityWorker.class).newInstance(this));
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException |
@@ -85,11 +85,11 @@ public class CityWorker<T extends City> extends CollectionWorker<T> {
         }
 
         @Override
-        public CustomPair<String, Boolean> doOption(ArrayList<String> arguments, User user) {
+        public CustomPair<String, Boolean> doOption(List<String> arguments, User user) {
             if (verifyUser(user)) {
-                return new CustomPair<>(CityWorker.this.getController().getCollectionBase().getSortedSet().getClass()
+                return new CustomPair<>(CityWorker.this.getController().getCollectionBase().getSet().getClass()
                         .toString().replace("class", "Collection type:") + "\nNumber of elements in" +
-                        " the collection: " + CityWorker.this.getController().getCollectionBase().getSortedSet().size()
+                        " the collection: " + CityWorker.this.getController().getCollectionBase().getSet().size()
                         + "\nCollection initialization time: " + CityWorker.this.getController().getCollectionBase()
                         .getInitializationDate() + "\n", true);
             } else {
@@ -108,10 +108,10 @@ public class CityWorker<T extends City> extends CollectionWorker<T> {
         }
 
         @Override
-        public CustomPair<String, Boolean> doOption(ArrayList<String> arguments, User user) {
+        public CustomPair<String, Boolean> doOption(List<String> arguments, User user) {
             if (verifyUser(user)) {
                 StringBuilder stringBuilder = new StringBuilder();
-                CityWorker.this.getController().getCollectionBase().getSortedSet().forEach(x -> stringBuilder
+                CityWorker.this.getController().getCollectionBase().getSet().forEach(x -> stringBuilder
                         .append(x.toString()).append("\n"));
                 stringBuilder.append("End of elements output.\n");
                 return new CustomPair<>(stringBuilder.toString(), true);
@@ -131,7 +131,7 @@ public class CityWorker<T extends City> extends CollectionWorker<T> {
         }
 
         @Override
-        public CustomPair<String, Boolean> doOption(ArrayList<String> arguments, User user) {
+        public CustomPair<String, Boolean> doOption(List<String> arguments, User user) {
             if (verifyUser(user)) {
                 T contest = CityWorker.this.getIFormer().formObj(arguments.get(0));
                 contest.setId(CityWorker.this.getController().getSequenceID());
@@ -158,7 +158,7 @@ public class CityWorker<T extends City> extends CollectionWorker<T> {
         }
 
         @Override
-        public CustomPair<String, Boolean> doOption(ArrayList<String> arguments, User user) {
+        public CustomPair<String, Boolean> doOption(List<String> arguments, User user) {
             if (verifyUser(user)) {
                 int id = Integer.parseInt(arguments.get(0));
                 T contest = CityWorker.this.getIFormer().formObj(arguments.get(1));
@@ -187,7 +187,7 @@ public class CityWorker<T extends City> extends CollectionWorker<T> {
         }
 
         @Override
-        public CustomPair<String, Boolean> doOption(ArrayList<String> arguments, User user) {
+        public CustomPair<String, Boolean> doOption(List<String> arguments, User user) {
             if (verifyUser(user)) {
                 boolean success = CityWorker.this.getController().removeContent(arguments.get(0), user.getName());
 
@@ -211,7 +211,7 @@ public class CityWorker<T extends City> extends CollectionWorker<T> {
         }
 
         @Override
-        public CustomPair<String, Boolean> doOption(ArrayList<String> arguments, User user) {
+        public CustomPair<String, Boolean> doOption(List<String> arguments, User user) {
             if (verifyUser(user)) {
                 boolean success = CityWorker.this.getController().clearContent(user.getName());
 
@@ -237,7 +237,7 @@ public class CityWorker<T extends City> extends CollectionWorker<T> {
         }
 
         @Override
-        public CustomPair<String, Boolean> doOption(ArrayList<String> arguments, User user) {
+        public CustomPair<String, Boolean> doOption(List<String> arguments, User user) {
             if (verifyUser(user)) {
                 T contest = CityWorker.this.getIFormer().formObj(arguments.get(0));
                 long toCompare = contest.getArea() + contest.getMeters() + contest.getPopulation();
@@ -273,7 +273,7 @@ public class CityWorker<T extends City> extends CollectionWorker<T> {
         }
 
         @Override
-        public CustomPair<String, Boolean> doOption(ArrayList<String> arguments, User user) {
+        public CustomPair<String, Boolean> doOption(List<String> arguments, User user) {
             if (verifyUser(user)) {
                 T contest = CityWorker.this.getIFormer().formObj(arguments.get(0));
                 long toCompare = contest.getArea() + contest.getMeters() + contest.getPopulation();
@@ -309,7 +309,7 @@ public class CityWorker<T extends City> extends CollectionWorker<T> {
         }
 
         @Override
-        public CustomPair<String, Boolean> doOption(ArrayList<String> arguments, User user) {
+        public CustomPair<String, Boolean> doOption(List<String> arguments, User user) {
             if (verifyUser(user)) {
                 T contest = CityWorker.this.getIFormer().formObj(arguments.get(0));
                 long toCompare = contest.getArea() + contest.getMeters() + contest.getPopulation();
@@ -341,9 +341,9 @@ public class CityWorker<T extends City> extends CollectionWorker<T> {
         }
 
         @Override
-        public CustomPair<String, Boolean> doOption(ArrayList<String> arguments, User user) {
+        public CustomPair<String, Boolean> doOption(List<String> arguments, User user) {
             if (verifyUser(user)) {
-                T contest = CityWorker.this.getController().getCollectionBase().getSortedSet().stream()
+                T contest = CityWorker.this.getController().getCollectionBase().getSet().stream()
                         .min(Comparator.comparingInt(T::getArea)).orElse(null);
 
                 if (contest != null) {
@@ -366,11 +366,11 @@ public class CityWorker<T extends City> extends CollectionWorker<T> {
         }
 
         @Override
-        public CustomPair<String, Boolean> doOption(ArrayList<String> arguments, User user) {
+        public CustomPair<String, Boolean> doOption(List<String> arguments, User user) {
             if (verifyUser(user)) {
                 StringBuilder stringBuilder = new StringBuilder();
 
-                CityWorker.this.getController().getCollectionBase().getSortedSet().stream().filter(x ->
+                CityWorker.this.getController().getCollectionBase().getSet().stream().filter(x ->
                         x.getGovernor().getHumanName().equals(arguments.get(0))).forEach(x -> stringBuilder
                         .append(x).append("\n"));
                 stringBuilder.append("End of elements output.\n");
@@ -392,11 +392,11 @@ public class CityWorker<T extends City> extends CollectionWorker<T> {
         }
 
         @Override
-        public CustomPair<String, Boolean> doOption(ArrayList<String> arguments, User user) {
+        public CustomPair<String, Boolean> doOption(List<String> arguments, User user) {
             if (verifyUser(user)) {
                 StringBuilder stringBuilder = new StringBuilder();
 
-                CityWorker.this.getController().getCollectionBase().getSortedSet().stream().filter(x -> x.getName()
+                CityWorker.this.getController().getCollectionBase().getSet().stream().filter(x -> x.getName()
                         .startsWith(arguments.get(0))).forEach(x -> stringBuilder.append(x).append("\n"));
                 stringBuilder.append("End of elements output.\n");
                 return new CustomPair<>(stringBuilder.toString(), true);

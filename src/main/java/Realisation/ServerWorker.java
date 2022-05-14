@@ -1,9 +1,9 @@
-package Processing;
+package Realisation;
 
-import Data.Command;
-import Data.CustomPair;
-import Data.User;
-import Data.Worker;
+import Models.Command;
+import Models.CustomPair;
+import Models.User;
+import Models.Worker;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.reflections.Reflections;
@@ -12,6 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Provides information for server-wide commands.
@@ -22,11 +23,11 @@ public class ServerWorker extends Worker {
     /**
      * Constructor, gets all necessary things.
      *
-     * @param arrayList      list to store command realizations
+     * @param list      list to store command realizations
      * @param userController way to get user information
      */
-    public ServerWorker(ArrayList<Command> arrayList, UserController userController) {
-        super(arrayList);
+    public ServerWorker(List<Command> list, UserController userController) {
+        super(list);
         this.userController = userController;
 
         this.initCommands();
@@ -36,7 +37,7 @@ public class ServerWorker extends Worker {
     public void initCommands() {
         ArrayList<Command> arrayList = new ArrayList<>();
 
-        new Reflections("Processing.ServerWorker").getSubTypesOf(Command.class).forEach(x -> {
+        new Reflections("Realisation.ServerWorker").getSubTypesOf(Command.class).forEach(x -> {
             try {
                 arrayList.add(x.getConstructor(ServerWorker.class).newInstance(this));
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException |
@@ -62,7 +63,7 @@ public class ServerWorker extends Worker {
         }
 
         @Override
-        public CustomPair<String, Boolean> doOption(ArrayList<String> arguments, User user) {
+        public CustomPair<String, Boolean> doOption(List<String> arguments, User user) {
             ObjectMapper objectMapper = new ObjectMapper();
 
             try {
@@ -94,7 +95,7 @@ public class ServerWorker extends Worker {
         }
 
         @Override
-        public CustomPair<String, Boolean> doOption(ArrayList<String> arguments, User user) {
+        public CustomPair<String, Boolean> doOption(List<String> arguments, User user) {
             ObjectMapper objectMapper = new ObjectMapper();
 
             try {

@@ -1,7 +1,7 @@
-package Processing;
+package Realisation;
 
-import Data.City;
-import Data.CollectionController;
+import Models.City;
+import Models.CollectionController;
 
 import java.sql.*;
 import java.util.SortedSet;
@@ -220,7 +220,7 @@ public class CityController extends CollectionController<City> {
 
     @Override
     public synchronized void moveContent() {
-        this.getCollectionBase().getSortedSet().clear();
+        this.getCollectionBase().getSet().clear();
 
         String addition = "FULL JOIN coordinates ON city.city_id = coordinates.coordinates_id" +
                 " FULL JOIN human ON city.city_id = human.human_id";

@@ -1,7 +1,7 @@
-package Data;
+package Models;
 
 import java.sql.Connection;
-import java.util.SortedSet;
+import java.util.Set;
 
 /**
  * The class responsible for working with the database.
@@ -32,7 +32,7 @@ public abstract class CollectionController<T extends Collectables> extends Contr
      * @param addition addition to the request
      * @return the set of received objects
      */
-    public abstract SortedSet<T> getContent(String addition);
+    public abstract Set<T> getContent(String addition);
 
     /**
      * Update content in the database.
@@ -83,9 +83,5 @@ public abstract class CollectionController<T extends Collectables> extends Contr
 
     public CollectionBase<T> getCollectionBase() {
         return collectionBase;
-    }
-
-    public void setCollectionBase(CollectionBase<T> collectionBase) {
-        this.collectionBase = collectionBase;
     }
 }
