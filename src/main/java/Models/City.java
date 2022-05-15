@@ -56,45 +56,6 @@ public class City extends Collectables implements Comparable<City>, Serializable
         this.governor = governor;
     }
 
-    /**
-     * Constructor, gets all necessary things.
-     *
-     * @param name             String identifier
-     * @param coordinates      location
-     * @param area             total area
-     * @param population       total population
-     * @param meters           meters above sea level
-     * @param climate          current climate
-     * @param government       current government
-     * @param standardOfLiving current standard of living
-     * @param governor         current governor
-     */
-    public City(String name, Coordinates coordinates, Integer area, Integer population, int meters, Climate climate,
-                Government government, StandardOfLiving standardOfLiving, Human governor) {
-        super(name);
-        this.coordinates = coordinates;
-        this.area = area;
-        this.population = population;
-        this.meters = meters;
-        this.climate = climate;
-        this.government = government;
-        this.standardOfLiving = standardOfLiving;
-        this.governor = governor;
-    }
-
-    public City(int id, String name, java.time.LocalDateTime creationDate, Integer area,
-                Integer population, int meters, Climate climate, Government government,
-                StandardOfLiving standardOfLiving) {
-        super(id, name);
-        this.creationDate = creationDate;
-        this.area = area;
-        this.population = population;
-        this.meters = meters;
-        this.climate = climate;
-        this.government = government;
-        this.standardOfLiving = standardOfLiving;
-    }
-
     public City(int id, String name, java.time.LocalDateTime creationDate, Integer area,
                 Integer population, int meters) {
         super(id, name);

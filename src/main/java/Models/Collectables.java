@@ -1,9 +1,11 @@
 package Models;
 
+import java.io.Serializable;
+
 /**
  * Represents all specified classes for storage in the collection.
  */
-public abstract class Collectables {
+public abstract class Collectables implements Serializable {
     private int id;
     private String name;
 
