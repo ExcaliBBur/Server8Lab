@@ -36,9 +36,10 @@ public class ServerDTO<T> implements Serializable {
      * @param message   response in byte format
      * @param isSuccess marks completed operations
      */
-    public ServerDTO(byte[] message, boolean isSuccess, DTOType dtoType) {
+    public ServerDTO(byte[] message, boolean isSuccess, Set<T> collection, DTOType dtoType) {
         this.message = message;
         this.isSuccess = isSuccess;
+        this.collection = collection;
         this.dtoType = dtoType;
     }
 

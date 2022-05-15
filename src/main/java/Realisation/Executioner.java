@@ -55,15 +55,14 @@ public class Executioner implements Runnable {
     }
 
     public void run() {
-        Sender<City> sender = new Sender<>(this.getDatagramChannel(), null, null);
-        ServerDTO<City> serverCityDTO = null;
+        ServerDTO<City> serverDTO = null;
         if (this.getClientDTO().isRequest()) {
             Server.logger.log(Level.INFO, "New connection has been registered.");
             ArrayList<Command.CommandData> commandData = new ArrayList<>();
             this.getUnitedCommandArray().forEach(x -> commandData.add(new Command
                     .CommandData(x.getName(), x.getArguments(), x.getDescription(), null)));
 
-            serverCityDTO = new ServerDTO<>("Ready to execute, type help to see all available commands.".getBytes(),
+            serverDTO = new ServerDTO<>("Ready to execute, type help to see all available commands.".getBytes(),
                     commandData, this.getCityController().getCollectionBase().getSet(), true,
                     ServerDTO.DTOType.RESPONSE);
         } else {
@@ -73,17 +72,18 @@ public class Executioner implements Runnable {
                 if (commands.getName().equals(keyWord)) {
                     CustomPair<String, Boolean> result = commands.doOption(this.getClientDTO().getCommandData()
                             .getUserArgs(), this.getClientDTO().getUser());
-                    serverCityDTO = new ServerDTO<>(result.getKey().getBytes(), result.getValue(),
-                            ServerDTO.DTOType.RESPONSE);
-                    System.out.println();
+                    serverDTO = new ServerDTO<>(result.getKey().getBytes(), result.getValue(), this.getCityController()
+                            .getCollectionBase().getSet(), ServerDTO.DTOType.RESPONSE);
                 }
             }
         }
 
-        sender.setServerDTO(serverCityDTO);
-        sender.setSocketAddress(this.getSocketAddress());
-        Server.connectedUsers.add(this.getSocketAddress());
-        new Thread(sender).start();
+        synchronized (Server.connectedUsers) {
+            Server.connectedUsers.add(this.getSocketAddress());
+        }
+
+        new Sender<>(this.getDatagramChannel(), serverDTO, Server.connectedUsers.stream().filter(x -> x.equals(this
+                .getSocketAddress())).findFirst().get()).start();
     }
 
     public List<Command> getUnitedCommandArray() {

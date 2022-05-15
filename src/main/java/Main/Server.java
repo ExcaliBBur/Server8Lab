@@ -20,7 +20,8 @@ import java.util.logging.Logger;
 
 public class Server {
     public static Logger logger;
-    public static Set<SocketAddress> connectedUsers = new HashSet<>();
+    public static final Set<SocketAddress> connectedUsers = new HashSet<>();
+    public static DatagramChannel channel;
 
     static {
         try {
@@ -35,7 +36,8 @@ public class Server {
     public static void main(String[] args) {
         try (DatagramChannel datagramChannel = DatagramChannel.open(); Selector selector = Selector.open();
              Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/Cities",
-                     "postgres", "1978ilya2003")) {
+                     "postgres", new Scanner(System.in).nextLine())) {
+            channel = datagramChannel;
 
             CityBase cityBase = new CityBase(City.class, Collections.synchronizedSortedSet(new TreeSet<>()));
             CityController cityController = new CityController(connection, cityBase);

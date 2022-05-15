@@ -1,8 +1,11 @@
 package Realisation;
 
+import Interaction.Sender;
+import Main.Server;
 import Models.City;
 import Models.JsonBase;
 import Exceptions.DeserializationException;
+import Models.ServerDTO;
 
 import java.util.Set;
 

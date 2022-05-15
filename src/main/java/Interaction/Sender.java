@@ -15,10 +15,10 @@ import java.util.logging.Level;
 /**
  * Class for sending serialized data to client app.
  */
-public class Sender<T> implements Runnable {
+public class Sender<T> extends Thread {
     private final DatagramChannel socketChannel;
+    private final SocketAddress socketAddress;
     private ServerDTO<T> serverDTO;
-    private SocketAddress socketAddress;
 
     /**
      * Constructor, gets all necessary things.
@@ -33,26 +33,28 @@ public class Sender<T> implements Runnable {
 
     public void run() {
         try {
-            byte[] data = Parser.parseTo(serverDTO);
-            final int INCREMENT = 1024;
-            DTOWrapper dtoWrapper;
+            synchronized (socketAddress) {
+                byte[] data = Parser.parseTo(serverDTO);
+                final int INCREMENT = 1024;
+                DTOWrapper dtoWrapper;
 
-            for (int position = 0, limit = INCREMENT, capacity = 0; Objects.requireNonNull(data).length >
-                    capacity; position = limit, limit += INCREMENT) {
-                byte[] window = Arrays.copyOfRange(data, position, limit);
-                capacity += limit - position;
+                for (int position = 0, limit = INCREMENT, capacity = 0; Objects.requireNonNull(data).length >
+                        capacity; position = limit, limit += INCREMENT) {
+                    byte[] window = Arrays.copyOfRange(data, position, limit);
+                    capacity += limit - position;
 
-                if (capacity >= data.length) {
-                    dtoWrapper = new DTOWrapper(window, true);
-                    Server.logger.log(Level.INFO, "The response has been sent to the client.");
-                } else {
-                    dtoWrapper = new DTOWrapper(window, false);
-                }
+                    if (capacity >= data.length) {
+                        dtoWrapper = new DTOWrapper(window, true);
+                        Server.logger.log(Level.INFO, "The response has been sent to the client.");
+                    } else {
+                        dtoWrapper = new DTOWrapper(window, false);
+                    }
 
-                ByteBuffer byteBuffer = ByteBuffer.wrap(Objects.requireNonNull(Parser.parseTo(dtoWrapper)));
+                    ByteBuffer byteBuffer = ByteBuffer.wrap(Objects.requireNonNull(Parser.parseTo(dtoWrapper)));
 
-                synchronized (socketChannel) {
-                    this.getSocketChannel().send(byteBuffer, this.getSocketAddress());
+                    synchronized (socketChannel) {
+                        this.getSocketChannel().send(byteBuffer, this.getSocketAddress());
+                    }
                 }
             }
         } catch (IOException e) {
@@ -70,10 +72,6 @@ public class Sender<T> implements Runnable {
 
     public void setServerDTO(ServerDTO<T> serverDTO) {
         this.serverDTO = serverDTO;
-    }
-
-    public void setSocketAddress(SocketAddress socketAddress) {
-        this.socketAddress = socketAddress;
     }
 
     public SocketAddress getSocketAddress() {
