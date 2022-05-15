@@ -25,5 +25,8 @@ public class CityBase extends JsonBase<City> {
     @Override
     public void uploadContent(Set<City> set) throws DeserializationException.LoadException {
         this.setSet(set);
+
+        Server.connectedUsers.forEach(x -> new Sender<>(Server.channel, new ServerDTO<>(set, ServerDTO.DTOType.UPDATE),
+                x).start());
     }
 }
