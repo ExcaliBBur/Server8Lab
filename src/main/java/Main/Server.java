@@ -28,6 +28,7 @@ public class Server {
             FileInputStream fileInputStream = new FileInputStream("LoggerConfig.txt");
             LogManager.getLogManager().readConfiguration(fileInputStream);
             logger = Logger.getLogger(Server.class.getName());
+            
         } catch (IOException e) {
             e.printStackTrace();
         }
