@@ -17,10 +17,9 @@ import java.util.*;
 public class CityWorker<T extends City> extends CollectionWorker<T> {
     private final UserController userController;
 
-    public CityWorker(CollectionController<T> collectionController, List<Command> commands, Formable<T> formable,
+    public CityWorker(CollectionController<T> collectionController, Formable<T> formable,
                       UserController userController) {
-        super(collectionController, commands, formable);
-        this.initCommands();
+        super(collectionController, formable);
         this.userController = userController;
     }
 
@@ -60,8 +59,8 @@ public class CityWorker<T extends City> extends CollectionWorker<T> {
     }
 
     @Override
-    public void initCommands() {
-        ArrayList<Command> arrayList = new ArrayList<>();
+    public List<Command> initialize() {
+        List<Command> arrayList = new ArrayList<>();
 
         new Reflections("Realisation.CityWorker").getSubTypesOf(Command.class).forEach(x -> {
             try {
@@ -72,7 +71,7 @@ public class CityWorker<T extends City> extends CollectionWorker<T> {
             }
         });
 
-        this.setCommands(arrayList);
+        return arrayList;
     }
 
     /**

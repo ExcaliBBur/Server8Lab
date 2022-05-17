@@ -15,7 +15,7 @@ import java.util.logging.Level;
 /**
  * Class for sending serialized data to client app.
  */
-public class Sender<T> extends Thread {
+public class Sender<T> implements Runnable {
     private final DatagramChannel socketChannel;
     private final SocketAddress socketAddress;
     private ServerDTO<T> serverDTO;
@@ -64,14 +64,6 @@ public class Sender<T> extends Thread {
 
     public DatagramChannel getSocketChannel() {
         return socketChannel;
-    }
-
-    public ServerDTO<T> getServerDTO() {
-        return serverDTO;
-    }
-
-    public void setServerDTO(ServerDTO<T> serverDTO) {
-        this.serverDTO = serverDTO;
     }
 
     public SocketAddress getSocketAddress() {

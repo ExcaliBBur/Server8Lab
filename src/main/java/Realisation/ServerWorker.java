@@ -1,9 +1,9 @@
 package Realisation;
 
+import Interfaces.Initializable;
 import Models.Command;
 import Models.CustomPair;
 import Models.User;
-import Models.Worker;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.reflections.Reflections;
@@ -17,25 +17,21 @@ import java.util.List;
 /**
  * Provides information for server-wide commands.
  */
-public class ServerWorker extends Worker {
+public class ServerWorker implements Initializable {
     private UserController userController;
 
     /**
      * Constructor, gets all necessary things.
      *
-     * @param list      list to store command realizations
      * @param userController way to get user information
      */
-    public ServerWorker(List<Command> list, UserController userController) {
-        super(list);
+    public ServerWorker(UserController userController) {
         this.userController = userController;
-
-        this.initCommands();
     }
 
     @Override
-    public void initCommands() {
-        ArrayList<Command> arrayList = new ArrayList<>();
+    public List<Command> initialize() {
+        List<Command> arrayList = new ArrayList<>();
 
         new Reflections("Realisation.ServerWorker").getSubTypesOf(Command.class).forEach(x -> {
             try {
@@ -46,7 +42,7 @@ public class ServerWorker extends Worker {
             }
         });
 
-        this.setCommands(arrayList);
+        return arrayList;
     }
 
     public UserController getUserController() {

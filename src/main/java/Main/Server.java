@@ -20,15 +20,13 @@ import java.util.logging.Logger;
 
 public class Server {
     public static Logger logger;
-    public static final Set<SocketAddress> connectedUsers = new HashSet<>();
-    public static DatagramChannel channel;
 
     static {
         try {
             FileInputStream fileInputStream = new FileInputStream("LoggerConfig.txt");
             LogManager.getLogManager().readConfiguration(fileInputStream);
             logger = Logger.getLogger(Server.class.getName());
-            
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -38,9 +36,11 @@ public class Server {
         try (DatagramChannel datagramChannel = DatagramChannel.open(); Selector selector = Selector.open();
              Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/Cities",
                      "postgres", new Scanner(System.in).nextLine())) {
-            channel = datagramChannel;
 
-            CityBase cityBase = new CityBase(City.class, Collections.synchronizedSortedSet(new TreeSet<>()));
+            Set<SocketAddress> connectedUsers = new HashSet<>();
+            Informer<City> informer = new Informer<>(datagramChannel, connectedUsers);
+
+            CityBase cityBase = new CityBase(City.class, Collections.synchronizedSortedSet(new TreeSet<>()), informer);
             CityController cityController = new CityController(connection, cityBase);
 
             datagramChannel.configureBlocking(false);
@@ -52,12 +52,13 @@ public class Server {
             logger.log(Level.INFO, "The server has started working successfully.");
 
             UserController userController = new UserController(connection);
-            ServerWorker serverWorker = new ServerWorker(new ArrayList<>(), userController);
-            CityWorker<City> cityWorker = new CityWorker<>(cityController, new ArrayList<>(), new CityFormer(),
+            ServerWorker serverWorker = new ServerWorker(userController);
+            CityWorker<City> cityWorker = new CityWorker<>(cityController, new CityFormer(),
                     userController);
             cityWorker.getController().moveContent();
 
-            Executioner executioner = new Executioner(datagramChannel, cityController, serverWorker, cityWorker);
+            Executioner executioner = new Executioner(datagramChannel, cityController, connectedUsers, serverWorker,
+                    cityWorker);
 
             Thread thread = new Thread(() -> {
                 try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in))) {

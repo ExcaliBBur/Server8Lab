@@ -1,6 +1,7 @@
 package Realisation;
 
 import Interaction.Parser;
+import Interfaces.Initializable;
 import Models.*;
 import Interaction.Sender;
 import Main.Server;
@@ -19,6 +20,7 @@ public class Executioner implements Runnable {
     private DatagramChannel datagramChannel;
     private SocketAddress socketAddress;
     private CityController cityController;
+    private final Set<SocketAddress> connectedUsers;
 
     /**
      * Constructor, gets all necessary things.
@@ -29,14 +31,15 @@ public class Executioner implements Runnable {
      * @param workers         command realizations
      */
     public Executioner(ClientDTO clientDTO, DatagramChannel datagramChannel, SocketAddress socketAddress,
-                       CityController cityController, Worker... workers) {
+                       CityController cityController, Set<SocketAddress> connectedUsers, Initializable... workers) {
         this.clientDTO = clientDTO;
         this.datagramChannel = datagramChannel;
         this.socketAddress = socketAddress;
         this.cityController = cityController;
+        this.connectedUsers = connectedUsers;
 
-        for (Worker worker : workers) {
-            this.getUnitedCommandArray().addAll(worker.getCommands());
+        for (Initializable worker : workers) {
+            this.getUnitedCommandArray().addAll(worker.initialize());
         }
     }
 
@@ -46,12 +49,14 @@ public class Executioner implements Runnable {
      * @param datagramChannel datagram channel
      * @param workers         command realizations
      */
-    public Executioner(DatagramChannel datagramChannel, CityController cityController, Worker... workers) {
+    public Executioner(DatagramChannel datagramChannel, CityController cityController, Set<SocketAddress>
+            connectedUsers, Initializable... workers) {
         this.datagramChannel = datagramChannel;
         this.cityController = cityController;
+        this.connectedUsers = connectedUsers;
 
-        for (Worker worker : workers) {
-            this.getUnitedCommandArray().addAll(worker.getCommands());
+        for (Initializable worker : workers) {
+            this.getUnitedCommandArray().addAll(worker.initialize());
         }
     }
 
@@ -79,12 +84,12 @@ public class Executioner implements Runnable {
             }
         }
 
-        synchronized (Server.connectedUsers) {
-            Server.connectedUsers.add(this.getSocketAddress());
+        synchronized (connectedUsers) {
+            this.getConnectedUsers().add(this.getSocketAddress());
         }
 
-        new Sender<>(this.getDatagramChannel(), serverDTO, Server.connectedUsers.stream().filter(x -> x.equals(this
-                .getSocketAddress())).findFirst().get()).start();
+        new Thread(new Sender<>(this.getDatagramChannel(), serverDTO, connectedUsers.stream().filter(x ->
+                x.equals(this.getSocketAddress())).findFirst().get())).start();
     }
 
     public List<Command> getUnitedCommandArray() {
@@ -113,5 +118,9 @@ public class Executioner implements Runnable {
 
     public CityController getCityController() {
         return cityController;
+    }
+
+    public Set<SocketAddress> getConnectedUsers() {
+        return connectedUsers;
     }
 }
