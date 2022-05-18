@@ -75,7 +75,7 @@ public class City extends Collectables implements Comparable<City>, Serializable
     public void setInputId(String line) throws DeserializationException {
         try {
             int id = Integer.parseInt(line);
-            if (id <= 0) throw new DeserializationException.InvalidParameterException();
+            if (id < 0) throw new DeserializationException.InvalidParameterException();
             this.setId(id);
         } catch (NumberFormatException e) {
             throw new DeserializationException.InvalidParameterException();
