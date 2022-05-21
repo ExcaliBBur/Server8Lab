@@ -72,10 +72,9 @@ public class City extends Collectables implements Comparable<City>, Serializable
      * @throws DeserializationException caused by incorrect data in file.
      */
     @JsonSetter("id")
-    public void setInputId(String line) throws DeserializationException {
+    public void setId(String line) throws DeserializationException {
         try {
             int id = Integer.parseInt(line);
-            if (id < 0) throw new DeserializationException.InvalidParameterException();
             this.setId(id);
         } catch (NumberFormatException e) {
             throw new DeserializationException.InvalidParameterException();
@@ -155,9 +154,7 @@ public class City extends Collectables implements Comparable<City>, Serializable
     public void setInputArea(String line) throws DeserializationException {
         if (!line.equals("")) {
             try {
-                int tmp = Integer.parseInt(line);
-                if (tmp <= 0) throw new DeserializationException.InvalidParameterException();
-                this.area = tmp;
+                this.area = Integer.parseInt(line);
             } catch (NumberFormatException e) {
                 throw new DeserializationException.InvalidParameterException();
             }
@@ -195,9 +192,7 @@ public class City extends Collectables implements Comparable<City>, Serializable
     public void setInputPopulation(String line) throws DeserializationException {
         if (!line.equals("")) {
             try {
-                int tmp = Integer.parseInt(line);
-                if (tmp <= 0) throw new DeserializationException.InvalidParameterException();
-                this.population = tmp;
+                this.population = Integer.parseInt(line);
             } catch (NumberFormatException e) {
                 throw new DeserializationException.InvalidParameterException();
             }

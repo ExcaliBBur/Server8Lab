@@ -10,14 +10,14 @@ import java.util.List;
  */
 public abstract class Command {
     private final String name;
-    private List<Argument> arguments;
+    private final List<Argument> arguments;
     private final String description;
 
     /**
      * Constructor, gets all necessary thins.
      *
-     * @param name           command name
-     * @param description    command description
+     * @param name        command name
+     * @param description command description
      */
     public Command(String name, ArrayList<Argument> arguments, String description) {
         this.name = name;
