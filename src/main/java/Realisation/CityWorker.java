@@ -1,5 +1,6 @@
 package Realisation;
 
+import Main.Server;
 import Models.*;
 import Interfaces.Formable;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -10,6 +11,7 @@ import org.reflections.Reflections;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.logging.Level;
 
 /**
  * Responsible for working with the collection of "Data.City" elements.
@@ -75,52 +77,6 @@ public class CityWorker<T extends City> extends CollectionWorker<T> {
     }
 
     /**
-     * Info command realization with additional data.
-     */
-    public class Info extends Command {
-        public Info() {
-            super("info", new ArrayList<>(), "Output information about the collection to" +
-                    " the standard output stream.");
-        }
-
-        @Override
-        public CustomPair<String, Boolean> doOption(List<String> arguments, User user) {
-            if (verifyUser(user)) {
-                return new CustomPair<>(CityWorker.this.getController().getCollectionBase().getSet().getClass()
-                        .toString().replace("class", "Collection type:") + "\nNumber of elements in" +
-                        " the collection: " + CityWorker.this.getController().getCollectionBase().getSet().size()
-                        + "\nCollection initialization time: " + CityWorker.this.getController().getCollectionBase()
-                        .getInitializationDate() + "\n", true);
-            } else {
-                return new CustomPair<>("You have no rights to use this command.\n", false);
-            }
-        }
-    }
-
-    /**
-     * Show command realization with additional data.
-     */
-    public class Show extends Command {
-        public Show() {
-            super("show", new ArrayList<>(), "Output to the standard output stream all the elements" +
-                    " of the collection in the string representation.");
-        }
-
-        @Override
-        public CustomPair<String, Boolean> doOption(List<String> arguments, User user) {
-            if (verifyUser(user)) {
-                StringBuilder stringBuilder = new StringBuilder();
-                CityWorker.this.getController().getCollectionBase().getSet().forEach(x -> stringBuilder
-                        .append(x.toString()).append("\n"));
-                stringBuilder.append("End of elements output.\n");
-                return new CustomPair<>(stringBuilder.toString(), true);
-            } else {
-                return new CustomPair<>("You have no rights to use this command.\n", false);
-            }
-        }
-    }
-
-    /**
      * Add command realization with additional data.
      */
     public class Add extends Command {
@@ -131,18 +87,23 @@ public class CityWorker<T extends City> extends CollectionWorker<T> {
 
         @Override
         public CustomPair<String, Boolean> doOption(List<String> arguments, User user) {
-            if (verifyUser(user)) {
-                T contest = CityWorker.this.getIFormer().formObj(arguments.get(0));
-                contest.setId(CityWorker.this.getController().getSequenceID());
-                boolean success = CityWorker.this.getController().addContent(contest, user.getName());
+            try {
+                if (verifyUser(user)) {
+                    T contest = CityWorker.this.getIFormer().formObj(arguments.get(0));
+                    contest.setId(CityWorker.this.getController().getSequenceID());
+                    boolean success = CityWorker.this.getController().addContent(contest, user.getName());
 
-                if (success) {
-                    CityWorker.this.getController().moveContent();
-                    return new CustomPair<>("The object has been added to the collection.\n", true);
+                    if (success) {
+                        CityWorker.this.getController().moveContent();
+                        return new CustomPair<>("The object has been added to the collection.\n", true);
+                    }
+                    return new CustomPair<>("Something went wrong.\n", false);
+                } else {
+                    return new CustomPair<>("You have no rights to use this command.\n", false);
                 }
-                return new CustomPair<>("Something went wrong.\n", false);
-            } else {
-                return new CustomPair<>("You have no rights to use this command.\n", false);
+            } catch (NullPointerException e) {
+                Server.logger.log(Level.INFO, "Something went wrong.");
+                return null;
             }
         }
     }
@@ -326,81 +287,6 @@ public class CityWorker<T extends City> extends CollectionWorker<T> {
                 return new CustomPair<>("The object is not minimal in the collection.\n", false);
             } else {
                 return new CustomPair<>("You have no rights to use this command.\n", false);
-            }
-        }
-    }
-
-    /**
-     * MinByArea command realization with additional data.
-     */
-    public class MinByArea extends Command {
-        public MinByArea() {
-            super("min_by_area", new ArrayList<>(), "Output any object from the collection whose" +
-                    " value of the area field is minimal.");
-        }
-
-        @Override
-        public CustomPair<String, Boolean> doOption(List<String> arguments, User user) {
-            if (verifyUser(user)) {
-                T contest = CityWorker.this.getController().getCollectionBase().getSet().stream()
-                        .min(Comparator.comparingInt(T::getArea)).orElse(null);
-
-                if (contest != null) {
-                    return new CustomPair<>(contest.toString(), true);
-                }
-                return new CustomPair<>("There are no cities in the collection.\n", false);
-            } else {
-                return new CustomPair<>("You have no rights to use this command.\n", false);
-            }
-        }
-    }
-
-    /**
-     * FilterByGovernor command realization with additional data.
-     */
-    public class FilterByGovernor extends Command {
-        public FilterByGovernor() {
-            super("filter_by_governor", new ArrayList<>(Arrays.asList(Argument.STRING)),
-                    "Output elements whose value of the governor field is equal to the specified one.");
-        }
-
-        @Override
-        public CustomPair<String, Boolean> doOption(List<String> arguments, User user) {
-            if (verifyUser(user)) {
-                StringBuilder stringBuilder = new StringBuilder();
-
-                CityWorker.this.getController().getCollectionBase().getSet().stream().filter(x ->
-                        x.getGovernor().getHumanName().equals(arguments.get(0))).forEach(x -> stringBuilder
-                        .append(x).append("\n"));
-                stringBuilder.append("End of elements output.\n");
-                return new CustomPair<>(stringBuilder.toString(), true);
-            } else {
-                return new CustomPair<>("You have no rights to use this command.\n", false);
-            }
-        }
-    }
-
-    /**
-     * FilterStartsWithName command realization with additional data.
-     */
-    public class FilterStartsWithName extends Command {
-        public FilterStartsWithName() {
-            super("filter_starts_with_name", new ArrayList<>(Arrays.asList(Argument.STRING)),
-                    "print elements, the value of the name field, which begins with the" +
-                            " specified substring.");
-        }
-
-        @Override
-        public CustomPair<String, Boolean> doOption(List<String> arguments, User user) {
-            if (verifyUser(user)) {
-                StringBuilder stringBuilder = new StringBuilder();
-
-                CityWorker.this.getController().getCollectionBase().getSet().stream().filter(x -> x.getName()
-                        .startsWith(arguments.get(0))).forEach(x -> stringBuilder.append(x).append("\n"));
-                stringBuilder.append("End of elements output.\n");
-                return new CustomPair<>(stringBuilder.toString(), true);
-            } else {
-                return new CustomPair<>("You have no rights to use this command.", false);
             }
         }
     }

@@ -19,8 +19,8 @@ public class CityFormer implements Formable<City> {
             City city = objectMapper.readValue(object, City.class);
             city.setCreationDate(LocalDateTime.now());
             return city;
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
+        } catch (JsonProcessingException ignore) {
+
         }
         return null;
     }

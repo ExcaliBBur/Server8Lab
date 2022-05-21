@@ -61,35 +61,34 @@ public class Executioner implements Runnable {
     }
 
     public void run() {
-        ServerDTO<City> serverDTO = null;
-        if (this.getClientDTO().isRequest()) {
-            Server.logger.log(Level.INFO, "New connection has been registered.");
-            ArrayList<Command.CommandData> commandData = new ArrayList<>();
-            this.getUnitedCommandArray().forEach(x -> commandData.add(new Command
-                    .CommandData(x.getName(), x.getArguments(), x.getDescription(), null)));
+        ServerDTO<City> serverDTO;
+        CustomPair<String, Boolean> result = null;
 
-            serverDTO = new ServerDTO<>("Ready to execute, type help to see all available commands.".getBytes(),
-                    commandData, this.getCityController().getCollectionBase().getSet(), true,
-                    ServerDTO.DTOType.RESPONSE);
-        } else {
-            String keyWord = this.getClientDTO().getCommandData().getName();
-            Server.logger.log(Level.INFO, "Execute the command " + keyWord + ".");
-            for (Command commands : this.getUnitedCommandArray()) {
-                if (commands.getName().equals(keyWord)) {
-                    CustomPair<String, Boolean> result = commands.doOption(this.getClientDTO().getCommandData()
-                            .getUserArgs(), this.getClientDTO().getUser());
-                    serverDTO = new ServerDTO<>(result.getKey().getBytes(), result.getValue(), this.getCityController()
-                            .getCollectionBase().getSet(), ServerDTO.DTOType.RESPONSE);
-                }
+        ArrayList<Command.CommandData> commandData = new ArrayList<>();
+        this.getUnitedCommandArray().forEach(x -> commandData.add(new Command
+                .CommandData(x.getName(), x.getArguments(), x.getDescription(), null)));
+
+        String keyWord = this.getClientDTO().getCommandData().getName();
+        Server.logger.log(Level.INFO, "Execute the command " + keyWord + ".");
+        for (Command commands : this.getUnitedCommandArray()) {
+            if (commands.getName().equals(keyWord)) {
+                result = commands.doOption(this.getClientDTO().getCommandData().getUserArgs(),
+                        this.getClientDTO().getUser());
             }
         }
 
-        synchronized (connectedUsers) {
-            this.getConnectedUsers().add(this.getSocketAddress());
-        }
+        if (this.getClientDTO().isRequest()) {
+            serverDTO = new ServerDTO<>(Objects.requireNonNull(result).getKey().getBytes(),
+                    commandData, this.getCityController().getCollectionBase().getSet(), result.getValue(),
+                    ServerDTO.DTOType.RESPONSE);
 
-        new Thread(new Sender<>(this.getDatagramChannel(), serverDTO, connectedUsers.stream().filter(x ->
-                x.equals(this.getSocketAddress())).findFirst().get())).start();
+            synchronized (connectedUsers) {
+                this.getConnectedUsers().add(this.getSocketAddress());
+            }
+
+            new Thread(new Sender<>(this.getDatagramChannel(), serverDTO, connectedUsers.stream().filter(x ->
+                    x.equals(this.getSocketAddress())).findFirst().get())).start();
+        }
     }
 
     public List<Command> getUnitedCommandArray() {
