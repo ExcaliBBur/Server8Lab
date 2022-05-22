@@ -3,12 +3,16 @@ package Models;
 import Exceptions.DeserializationException;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 import java.io.Serializable;
 
 /**
  * Class whose objects are contained in the collection.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class City extends Collectables implements Comparable<City>, Serializable {
     private Coordinates coordinates;
     private java.time.LocalDateTime creationDate;
@@ -19,6 +23,8 @@ public class City extends Collectables implements Comparable<City>, Serializable
     private Government government;
     private StandardOfLiving standardOfLiving;
     private Human governor;
+    @JsonIgnore
+    private String username;
 
     public static final long serialVersionUID = 42L;
 
@@ -43,7 +49,7 @@ public class City extends Collectables implements Comparable<City>, Serializable
      */
     public City(int id, String name, Coordinates coordinates, java.time.LocalDateTime creationDate, Integer area,
                 Integer population, int meters, Climate climate, Government government,
-                StandardOfLiving standardOfLiving, Human governor) {
+                StandardOfLiving standardOfLiving, Human governor, String username) {
         super(id, name);
         this.coordinates = coordinates;
         this.creationDate = creationDate;
@@ -54,17 +60,22 @@ public class City extends Collectables implements Comparable<City>, Serializable
         this.government = government;
         this.standardOfLiving = standardOfLiving;
         this.governor = governor;
+        this.username = username;
     }
 
     public City(int id, String name, java.time.LocalDateTime creationDate, Integer area,
-                Integer population, int meters) {
+                Integer population, int meters, String username) {
         super(id, name);
         this.creationDate = creationDate;
         this.area = area;
         this.population = population;
         this.meters = meters;
+        this.username = username;
     }
-
+    @JsonGetter("username")
+    public String getUsername() {
+        return username;
+    }
     /**
      * Specified setter of id.
      *
