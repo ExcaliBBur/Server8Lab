@@ -95,14 +95,14 @@ public class CityWorker<T extends City> extends CollectionWorker<T> {
 
                     if (success) {
                         CityWorker.this.getController().moveContent();
-                        return new CustomPair<>("The object has been added to the collection.\n", true);
+                        return new CustomPair<>("object_added", true);
                     }
-                    return new CustomPair<>("Something went wrong.\n", false);
+                    return new CustomPair<>("went_wrong", false);
                 } else {
-                    return new CustomPair<>("You have no rights to use this command.\n", false);
+                    return new CustomPair<>("no_rights", false);
                 }
             } catch (NullPointerException e) {
-                Server.logger.log(Level.INFO, "Something went wrong.");
+                Server.logger.log(Level.INFO, "went_wrong");
                 return null;
             }
         }
@@ -128,11 +128,11 @@ public class CityWorker<T extends City> extends CollectionWorker<T> {
 
                 if (success) {
                     CityWorker.this.getController().moveContent();
-                    return new CustomPair<>("The object with the entered ID has been updated.\n", true);
+                    return new CustomPair<>("object_updated", true);
                 }
-                return new CustomPair<>("Impossible to update object with such id.\n", false);
+                return new CustomPair<>("impossible_to_update", false);
             } else {
-                return new CustomPair<>("You have no rights to use this command.\n", false);
+                return new CustomPair<>("no_rights", false);
             }
         }
     }
@@ -153,11 +153,11 @@ public class CityWorker<T extends City> extends CollectionWorker<T> {
 
                 if (success) {
                     CityWorker.this.getController().moveContent();
-                    return new CustomPair<>("Deletion completed successfully.\n", true);
+                    return new CustomPair<>("deletion_completed", true);
                 }
-                return new CustomPair<>("Impossible to delete this object.\n", false);
+                return new CustomPair<>("impossible_to_delete", false);
             } else {
-                return new CustomPair<>("You have no rights to use this command.\n", false);
+                return new CustomPair<>("no_rights", false);
             }
         }
     }
@@ -177,12 +177,12 @@ public class CityWorker<T extends City> extends CollectionWorker<T> {
 
                 if (success) {
                     CityWorker.this.getController().moveContent();
-                    return new CustomPair<>("The collection has been successfully cleared.\n", true);
+                    return new CustomPair<>("deletion_completed", true);
                 } else {
-                    return new CustomPair<>("It is not possible to delete items from the collection.\n", false);
+                    return new CustomPair<>("impossible_to_delete", false);
                 }
             } else {
-                return new CustomPair<>("You have no rights to use this command.\n", false);
+                return new CustomPair<>("no_rights", false);
             }
         }
     }
@@ -213,12 +213,12 @@ public class CityWorker<T extends City> extends CollectionWorker<T> {
 
                 if (summary != 0) {
                     CityWorker.this.getController().moveContent();
-                    return new CustomPair<>("Deletion completed successfully.\n", true);
+                    return new CustomPair<>("deletion_completed", true);
                 } else {
-                    return new CustomPair<>("Impossible to delete objects.\n", false);
+                    return new CustomPair<>("impossible_to_delete", false);
                 }
             } else {
-                return new CustomPair<>("You have no rights to use this command.\n", false);
+                return new CustomPair<>("no_rights", false);
             }
         }
     }
@@ -249,12 +249,12 @@ public class CityWorker<T extends City> extends CollectionWorker<T> {
 
                 if (summary != 0) {
                     CityWorker.this.getController().moveContent();
-                    return new CustomPair<>("Deletion completed successfully.\n", true);
+                    return new CustomPair<>("deletion_completed", true);
                 } else {
-                    return new CustomPair<>("Impossible to delete objects.\n", false);
+                    return new CustomPair<>("impossible_to_delete", false);
                 }
             } else {
-                return new CustomPair<>("You have no rights to use this command.\n", false);
+                return new CustomPair<>("no_rights", false);
             }
         }
     }
@@ -282,11 +282,11 @@ public class CityWorker<T extends City> extends CollectionWorker<T> {
                     contest.setId(CityWorker.this.getController().getSequenceID());
                     CityWorker.this.getController().addContent(contest, user.getName());
                     CityWorker.this.getController().moveContent();
-                    return new CustomPair<>("The object has been added to the collection.\n", true);
+                    return new CustomPair<>("object_added", true);
                 }
-                return new CustomPair<>("The object is not minimal in the collection.\n", false);
+                return new CustomPair<>("Tnot_minimal", false);
             } else {
-                return new CustomPair<>("You have no rights to use this command.\n", false);
+                return new CustomPair<>("no_rights", false);
             }
         }
     }

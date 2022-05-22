@@ -67,12 +67,12 @@ public class ServerWorker implements Initializable {
 
                 try {
                     if (object.equals(ServerWorker.this.getUserController().getUser(object.getName()))) {
-                        return new CustomPair<>("Success!", true);
+                        return new CustomPair<>("success", true);
                     } else {
-                        return new CustomPair<>("Wrong password", false);
+                        return new CustomPair<>("wrong_password", false);
                     }
                 } catch (SQLException e) {
-                    return new CustomPair<>("There is no such account", false);
+                    return new CustomPair<>("no_account", false);
                 }
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
@@ -97,9 +97,9 @@ public class ServerWorker implements Initializable {
             try {
                 ServerWorker.this.getUserController().insertUser(objectMapper.readValue(arguments.get(0), User.class));
 
-                return new CustomPair<>("New account has been successfully registered.", true);
+                return new CustomPair<>("new_account", true);
             } catch (SQLException e) {
-                return new CustomPair<>("Account with such name had been already registered.", false);
+                return new CustomPair<>("already_exists", false);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }

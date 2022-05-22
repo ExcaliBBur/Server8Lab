@@ -78,9 +78,9 @@ public class Executioner implements Runnable {
         }
 
         if (this.getClientDTO().isRequest()) {
-            serverDTO = new ServerDTO<>(Objects.requireNonNull(result).getKey().getBytes(),
-                    commandData, this.getCityController().getCollectionBase().getSet(), result.getValue(),
-                    ServerDTO.DTOType.RESPONSE);
+            serverDTO = new ServerDTO<>(clientDTO.getLanguage().getResources().getString(Objects.requireNonNull(result)
+                    .getKey()).getBytes(), commandData, this.getCityController().getCollectionBase().getSet(),
+                    result.getValue(), ServerDTO.DTOType.RESPONSE);
 
             synchronized (connectedUsers) {
                 this.getConnectedUsers().add(this.getSocketAddress());
