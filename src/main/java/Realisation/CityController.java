@@ -45,7 +45,7 @@ public class CityController extends CollectionController<City> {
                 City city = new City(resultSet.getInt("city_id"), resultSet.getString("city_name"),
                         ((Timestamp) resultSet.getObject("creation_date")).toLocalDateTime(),
                         resultSet.getInt("area"), resultSet.getInt("population"), resultSet
-                        .getInt("meters_above_sea_level"));
+                        .getInt("meters_above_sea_level"), resultSet.getString("city_user"));
 
                 try {
                     city.setClimate(City.Climate.valueOf(resultSet
