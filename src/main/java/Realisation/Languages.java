@@ -34,6 +34,8 @@ public enum Languages implements Serializable {
         }
     };
 
+    public static final long serialVersionUID = 42L;
+
     private final String name;
 
     Languages(String name) {
