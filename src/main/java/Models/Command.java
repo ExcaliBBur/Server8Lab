@@ -19,7 +19,7 @@ public abstract class Command {
      * @param name        command name
      * @param description command description
      */
-    public Command(String name, ArrayList<Argument> arguments, String description) {
+    public Command(String name, List<Argument> arguments, String description) {
         this.name = name;
         this.arguments = arguments;
         this.description = description;
@@ -52,7 +52,7 @@ public abstract class Command {
      *
      * @return divided arguments
      */
-    public ArrayList<String> parseArguments(String arguments) {
+    public List<String> parseArguments(String arguments) {
         return new ArrayList<>(Arrays.asList(arguments.split("\n")));
     }
 
