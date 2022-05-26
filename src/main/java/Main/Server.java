@@ -44,7 +44,7 @@ public class Server {
             CityController cityController = new CityController(connection, cityBase);
 
             datagramChannel.configureBlocking(false);
-            SocketAddress socketAddress = new InetSocketAddress(InetAddress.getByName("localhost"), 6666);
+            SocketAddress socketAddress = new InetSocketAddress(6666);
             datagramChannel.bind(socketAddress);
 
             datagramChannel.register(selector, SelectionKey.OP_READ);

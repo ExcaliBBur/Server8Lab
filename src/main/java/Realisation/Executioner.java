@@ -1,6 +1,5 @@
 package Realisation;
 
-import Interaction.Parser;
 import Interfaces.Initializable;
 import Models.*;
 import Interaction.Sender;
@@ -8,6 +7,7 @@ import Main.Server;
 
 import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -79,8 +79,8 @@ public class Executioner implements Runnable {
 
         if (this.getClientDTO().isRequest()) {
             serverDTO = new ServerDTO<>(clientDTO.getLanguage().getResources().getString(Objects.requireNonNull(result)
-                    .getKey()).getBytes(), commandData, this.getCityController().getCollectionBase().getSet(),
-                    result.getValue(), ServerDTO.DTOType.RESPONSE);
+                    .getKey()).getBytes(StandardCharsets.UTF_8), commandData, this.getCityController()
+                    .getCollectionBase().getSet(), result.getValue(), ServerDTO.DTOType.RESPONSE);
 
             synchronized (connectedUsers) {
                 this.getConnectedUsers().add(this.getSocketAddress());
